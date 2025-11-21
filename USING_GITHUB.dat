@@ -1,0 +1,28 @@
+
+
+
+
+cd /path/where/you/want/the/project
+
+git clone git@github.com:youruser/yourrepo.git
+
+cd yourrepo
+
+# Now you can make changes and to check what changes you have made you can use commands like "git ststus" or "git diff"
+
+
+# To add everything you changed:
+git add .
+#Or just specific file(s):
+git add path/to/file1 path/to/file2
+
+git commit -m "Describe what you changed"
+
+#This is only needed once when you are setting up the github or gitlab repo
+git config --global user.name "Your Name"
+git config --global user.email "your_email@example.com"
+
+git push
+
+# Later if you want to pull things
+git pull
