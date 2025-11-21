@@ -1,0 +1,5 @@
+{
+  "name": "DockAnalyzer",
+  "description": "A fully client-side protein-ligand interaction analyzer and visualizer. Upload PDB structures to calculate H-bonds, hydrophobic contacts, and salt bridges instantly in the browser.",
+  "requestFramePermissions": []
+}
