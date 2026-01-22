@@ -198,7 +198,7 @@ const Viewer3Dmol: React.FC<Props> = ({
                             colorscheme: {
                                 prop: 'elem',
                                 map: {
-                                    'C': '#22c55e', // Bright GREEN for carbons - very distinct!
+                                    'C': visualSettings.ligandColor, // User-selected carbon color
                                     'N': '#3b82f6', // Blue
                                     'O': '#ef4444', // Red
                                     'S': '#fbbf24', // Bright Yellow
@@ -212,7 +212,7 @@ const Viewer3Dmol: React.FC<Props> = ({
                             colorscheme: {
                                 prop: 'elem',
                                 map: {
-                                    'C': '#22c55e', // Bright GREEN
+                                    'C': visualSettings.ligandColor, // User-selected carbon color
                                     'N': '#3b82f6',
                                     'O': '#ef4444',
                                     'S': '#fbbf24',
@@ -229,7 +229,7 @@ const Viewer3Dmol: React.FC<Props> = ({
                             colorscheme: {
                                 prop: 'elem',
                                 map: {
-                                    'C': '#22c55e', // Bright GREEN
+                                    'C': visualSettings.ligandColor, // User-selected carbon color
                                     'N': '#3b82f6',
                                     'O': '#ef4444',
                                     'S': '#fbbf24',
@@ -247,7 +247,7 @@ const Viewer3Dmol: React.FC<Props> = ({
                             colorscheme: {
                                 prop: 'elem',
                                 map: {
-                                    'C': '#22c55e', // Bright GREEN
+                                    'C': visualSettings.ligandColor, // User-selected carbon color
                                     'N': '#3b82f6',
                                     'O': '#ef4444',
                                     'S': '#fbbf24',

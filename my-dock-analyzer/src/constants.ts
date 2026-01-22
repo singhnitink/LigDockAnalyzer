@@ -1,19 +1,20 @@
 
-export const MAX_INTERACTION_DIST = 7.5; // Expanded for Pi-Stacking centers
+export const MAX_INTERACTION_DIST = 6.0; // Max distance for any interaction search
 
-// Interaction Thresholds (Angstroms & Degrees) - ALIGNED WITH PLIP
+// Interaction Thresholds (Angstroms & Degrees) - SCIENTIFICALLY CORRECTED
 export const THRESHOLDS = {
-  HBOND_DIST: 4.1, // PLIP uses 4.1A for heavy atom distance
-  HBOND_ANGLE: 90, // Min Angle at donor heavy atom
-  SALT_BRIDGE_DIST: 5.5, // PLIP default for attractive charge interactions
-  HYDROPHOBIC_DIST: 4.0, // PLIP standard for C-C contacts
-  PI_STACKING_DIST: 7.5, // Centroid-Centroid max
-  PI_STACKING_OFFSET: 2.0, // Max offset for parallel
-  PI_STACKING_ANGLE_PARALLEL: 30, // Max deviation
-  PI_STACKING_ANGLE_TSHAPED: 60, // Min angle
-  PI_CATION_DIST: 6.0, // Ring center to charge center
-  HALOGEN_DIST: 4.0,
-  METAL_DIST: 3.0,
+  HBOND_DIST: 3.5, // Heavy atom donor-acceptor distance
+  HBOND_ANGLE: 120, // Donor-H-Acceptor angle (≥120°, ≥130° preferred)
+  SALT_BRIDGE_DIST: 4.0, // Between charged heavy atoms
+  HYDROPHOBIC_DIST: 4.5, // Nonpolar carbon contacts (aliphatic/aromatic)
+  PI_STACKING_DIST: 5.5, // Centroid-centroid max
+  PI_STACKING_OFFSET: 2.0, // Max offset for parallel stacking
+  PI_STACKING_ANGLE_PARALLEL: 30, // Max deviation from parallel
+  PI_STACKING_ANGLE_TSHAPED: 60, // Min angle for T-shaped
+  PI_CATION_DIST: 5.0, // Ring center to charge center
+  HALOGEN_DIST: 3.5, // Halogen bond distance
+  HALOGEN_ANGLE: 140, // C-X···A angle (strong directionality)
+  METAL_DIST: 2.8, // General metal coordination (varies by metal)
 };
 
 // Residue Definitions
@@ -34,7 +35,7 @@ export const ATOM_PROPS = {
   POS_CHARGE_ATOMS: {
     'ARG': ['NH1', 'NH2', 'CZ'], // Guanidinium group
     'LYS': ['NZ'],
-    'HIS': ['ND1', 'NE2'] 
+    'HIS': ['ND1', 'NE2']
   },
   NEG_CHARGE_ATOMS: {
     'ASP': ['OD1', 'OD2'],
@@ -48,10 +49,11 @@ export const ATOM_PROPS = {
     'HIS': ['CG', 'ND1', 'CD2', 'CE1', 'NE2']
   },
   // General
-  // Donors: N or O bonded to H. In PDB we assume N/O unless specific non-donor types.
-  // We treat all N/O as potential donors/acceptors in simplified mode, refined by geometry.
-  DONORS: new Set(['N', 'O', 'S', 'F']), 
-  ACCEPTORS: new Set(['N', 'O', 'S', 'F', 'CL', 'BR', 'I']),
-  HALOGENS: new Set(['F', 'CL', 'BR', 'I']),
+  // Donors: N or O bonded to H. S can also donate in some cases (thiols).
+  // Fluorine is NOT a routine H-bond participant in biological systems.
+  DONORS: new Set(['N', 'O', 'S']),
+  ACCEPTORS: new Set(['N', 'O', 'S']),
+  // Halogen bond donors: Cl, Br, I (F has weak σ-hole, rarely forms halogen bonds)
+  HALOGENS: new Set(['CL', 'BR', 'I']),
   METALS: new Set(['ZN', 'MG', 'FE', 'CU', 'CA', 'NA', 'K', 'MN', 'CO', 'NI']),
 };
