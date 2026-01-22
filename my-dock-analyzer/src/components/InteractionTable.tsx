@@ -1,6 +1,6 @@
 
 import React, { useMemo } from 'react';
-import type { Interaction, ResidueOption } from '../types';
+import type { Interaction } from '../types';
 import { InteractionType } from '../types';
 import { Download, FileJson } from 'lucide-react';
 
@@ -9,7 +9,7 @@ interface Props {
 }
 
 const InteractionTable: React.FC<Props> = ({ interactions }) => {
-  
+
   const downloadCSV = () => {
     const headers = ['ID', 'Type', 'Distance (Å)', 'Ligand Atom', 'Protein Atom', 'Residue'];
     const rows = interactions.map(i => [
@@ -20,7 +20,7 @@ const InteractionTable: React.FC<Props> = ({ interactions }) => {
       `${i.proteinAtom.element}:${i.proteinAtom.name}`,
       `${i.proteinAtom.resName} ${i.proteinAtom.resNo}`
     ]);
-    
+
     const csvContent = [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
@@ -59,12 +59,12 @@ const InteractionTable: React.FC<Props> = ({ interactions }) => {
       {/* Toolbar inside table area if needed, mostly handled by parent or header. 
           We put export buttons here for convenience. */}
       <div className="px-4 py-2 bg-white border-b border-slate-100 flex justify-end gap-2">
-         <button onClick={downloadCSV} className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-slate-100 border border-slate-300 rounded hover:bg-slate-200 text-slate-700">
-            <Download size={12} /> Export CSV
-          </button>
-          <button onClick={downloadJSON} className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-slate-100 border border-slate-300 rounded hover:bg-slate-200 text-slate-700">
-            <FileJson size={12} /> Export JSON
-          </button>
+        <button onClick={downloadCSV} className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-slate-100 border border-slate-300 rounded hover:bg-slate-200 text-slate-700">
+          <Download size={12} /> Export CSV
+        </button>
+        <button onClick={downloadJSON} className="flex items-center gap-1 px-2 py-1 text-xs font-medium bg-slate-100 border border-slate-300 rounded hover:bg-slate-200 text-slate-700">
+          <FileJson size={12} /> Export JSON
+        </button>
       </div>
 
       <div className="overflow-auto flex-1 bg-white">
@@ -80,13 +80,13 @@ const InteractionTable: React.FC<Props> = ({ interactions }) => {
           </thead>
           <tbody className="divide-y divide-slate-100">
             {sortedInteractions.map((interaction) => {
-               let badgeColor = 'bg-slate-100 text-slate-800';
-               if (interaction.type === InteractionType.HydrogenBond) badgeColor = 'bg-blue-50 text-blue-700 border border-blue-100';
-               if (interaction.type === InteractionType.Hydrophobic) badgeColor = 'bg-orange-50 text-orange-700 border border-orange-100';
-               if (interaction.type === InteractionType.SaltBridge) badgeColor = 'bg-yellow-50 text-yellow-700 border border-yellow-100';
-               if (interaction.type === InteractionType.HalogenBond) badgeColor = 'bg-purple-50 text-purple-700 border border-purple-100';
+              let badgeColor = 'bg-slate-100 text-slate-800';
+              if (interaction.type === InteractionType.HydrogenBond) badgeColor = 'bg-blue-50 text-blue-700 border border-blue-100';
+              if (interaction.type === InteractionType.Hydrophobic) badgeColor = 'bg-orange-50 text-orange-700 border border-orange-100';
+              if (interaction.type === InteractionType.SaltBridge) badgeColor = 'bg-yellow-50 text-yellow-700 border border-yellow-100';
+              if (interaction.type === InteractionType.HalogenBond) badgeColor = 'bg-purple-50 text-purple-700 border border-purple-100';
 
-               return (
+              return (
                 <tr key={interaction.id} className="hover:bg-slate-50 transition-colors">
                   <td className="px-4 py-2">
                     <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wide ${badgeColor}`}>

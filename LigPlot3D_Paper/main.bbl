@@ -1,0 +1,95 @@
+\providecommand{\latin}[1]{#1}
+\makeatletter
+\providecommand{\doi}
+  {\begingroup\let\do\@makeother\dospecials
+  \catcode`\{=1 \catcode`\}=2 \doi@aux}
+\providecommand{\doi@aux}[1]{\endgroup\texttt{#1}}
+\makeatother
+\providecommand*\mcitethebibliography{\thebibliography}
+\csname @ifundefined\endcsname{endmcitethebibliography}
+  {\let\endmcitethebibliography\endthebibliography}{}
+\begin{mcitethebibliography}{9}
+\providecommand*\natexlab[1]{#1}
+\providecommand*\mciteSetBstSublistMode[1]{}
+\providecommand*\mciteSetBstMaxWidthForm[2]{}
+\providecommand*\mciteBstWouldAddEndPuncttrue
+  {\def\EndOfBibitem{\unskip.}}
+\providecommand*\mciteBstWouldAddEndPunctfalse
+  {\let\EndOfBibitem\relax}
+\providecommand*\mciteSetBstMidEndSepPunct[3]{}
+\providecommand*\mciteSetBstSublistLabelBeginEnd[3]{}
+\providecommand*\EndOfBibitem{}
+\mciteSetBstSublistMode{f}
+\mciteSetBstMaxWidthForm{subitem}{(\alph{mcitesubitemcount})}
+\mciteSetBstSublistLabelBeginEnd
+  {\mcitemaxwidthsubitemform\space}
+  {\relax}
+  {\relax}
+
+\bibitem[Trott and Olson(2010)Trott, and Olson]{trott2010autodockvina}
+Trott,~O.; Olson,~A.~J. AutoDock Vina: Improving the speed and accuracy of
+  docking with a new scoring function, efficient optimization, and
+  multithreading. \emph{Journal of Computational Chemistry} \textbf{2010},
+  \emph{31}, 455--461\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Salentin \latin{et~al.}(2015)Salentin, Schreiber, Haupt, Adasme, and
+  Schroeder]{salentin2015plip}
+Salentin,~S.; Schreiber,~S.; Haupt,~V.~J.; Adasme,~M.~F.; Schroeder,~M. {PLIP}:
+  fully automated protein--ligand interaction profiler. \emph{Nucleic Acids
+  Research} \textbf{2015}, \emph{43}, W443--W447\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Schake \latin{et~al.}(2025)Schake, Bolz, \latin{et~al.}
+  others]{schake2025plip}
+Schake,~P.; Bolz,~S.~N.; others {PLIP} 2025: introducing protein--protein
+  interactions to the protein--ligand interaction profiler. \emph{Nucleic Acids
+  Research} \textbf{2025}, \emph{53}, W463--W472\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Laskowski and Swindells(2011)Laskowski, and
+  Swindells]{laskowski2011ligplotplus}
+Laskowski,~R.~A.; Swindells,~M.~B. LigPlot+: multiple ligand--protein
+  interaction diagrams for drug discovery. \emph{Journal of Chemical
+  Information and Modeling} \textbf{2011}, \emph{51}, 2778--2786\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[{Meta Platforms Inc.}(2024)]{reactjs}
+{Meta Platforms Inc.} React: A JavaScript library for building user interfaces.
+  \url{https://react.dev/}, 2024; Accessed: 2026-01-22\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[You(2024)]{vitejs}
+You,~E. Vite: Next Generation Frontend Tooling. \url{https://vitejs.dev/},
+  2024; Accessed: 2026-01-22\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Rose \latin{et~al.}(2018)Rose, Bradley, Valasatava, Duarte, Prli{\'c},
+  and Rose]{rose2018ngl}
+Rose,~A.~S.; Bradley,~A.~R.; Valasatava,~Y.; Duarte,~J.~M.; Prli{\'c},~A.;
+  Rose,~P.~W. NGL viewer: web-based molecular graphics for large complexes.
+  \emph{Bioinformatics} \textbf{2018}, \emph{34}, 3755--3758\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Rego and Koes(2015)Rego, and Koes]{rego20153dmol}
+Rego,~N.; Koes,~D.~R. 3Dmol. js: molecular visualization with WebGL.
+  \emph{Bioinformatics} \textbf{2015}, \emph{31}, 1322--1324\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\end{mcitethebibliography}

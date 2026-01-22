@@ -25,7 +25,7 @@ const App: React.FC = () => {
   const [ligandCandidates, setLigandCandidates] = useState<ResidueOption[]>([]);
   const [selectedLigand, setSelectedLigand] = useState<ResidueOption | null>(null);
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null);
-  const [showInteractions, setShowInteractions] = useState(true);
+  const [showInteractions] = useState(true);
   const [manualSearchQuery, setManualSearchQuery] = useState('');
   const [showHelp, setShowHelp] = useState(false);
 

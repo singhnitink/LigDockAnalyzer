@@ -12,15 +12,17 @@ export interface AtomData {
   isHet: boolean;
 }
 
-export enum InteractionType {
-  HydrogenBond = 'Hydrogen Bond',
-  Hydrophobic = 'Hydrophobic',
-  SaltBridge = 'Salt Bridge',
-  PiStacking = 'Pi-Stacking',
-  HalogenBond = 'Halogen Bond',
-  MetalCoordination = 'Metal Coordination',
-  Unknown = 'Unknown'
-}
+export const InteractionType = {
+  HydrogenBond: 'Hydrogen Bond',
+  Hydrophobic: 'Hydrophobic',
+  SaltBridge: 'Salt Bridge',
+  PiStacking: 'Pi-Stacking',
+  HalogenBond: 'Halogen Bond',
+  MetalCoordination: 'Metal Coordination',
+  Unknown: 'Unknown'
+} as const;
+
+export type InteractionType = typeof InteractionType[keyof typeof InteractionType];
 
 export interface Interaction {
   id: string;

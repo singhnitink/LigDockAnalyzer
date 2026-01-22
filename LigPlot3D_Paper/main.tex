@@ -1,0 +1,155 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% This is a model paper for LigPlot3D using the achemso class
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\documentclass[journal=jacsat,manuscript=article]{achemso}
+
+\usepackage[version=3]{mhchem} % Formula subscripts using \ce{}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{xspace}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+
+\newcommand*\mycommand[1]{\texttt{\emph{#1}}}
+
+\author{Nitin Kumar Singh}
+\affiliation[Indian Institute of Technology (IIT) Gandhinagar]
+{Discipline of Chemical Engineering, Indian Institute of Technology (IIT) Gandhinagar, Palaj, Gujarat 382355, India}
+
+\author{Mithun Radhakrishna}
+\affiliation[Indian Institute of Technology (IIT) Gandhinagar]
+{Discipline of Chemical Engineering, Indian Institute of Technology (IIT) Gandhinagar, Palaj, Gujarat 382355, India}
+\alsoaffiliation[Indian Institute of Technology (IIT) Gandhinagar]
+{Center for Biomedical Engineering, Indian Institute of Technology (IIT) Gandhinagar, Palaj, Gujarat 382355, India}
+\email{mithunr@iitgn.ac.in}
+
+\title[LigPlot3D]
+  {LigPlot3D: An Interactive Web-Based Framework for Geometric Analysis of Protein-Ligand Interactions}
+
+\abbreviations{PDB, NGL, GUI, API}
+\keywords{Molecular Docking, Visualization, Web Application, Interaction Analysis}
+
+\begin{document}
+
+\begin{abstract}
+
+Molecular docking studies routinely generate multiple candidate binding poses, creating a practical need for rapid and interpretable inspection of protein--ligand interactions beyond numerical scoring functions. While established tools provide comprehensive interaction profiling or schematic visualization, they often require local installation or generate static outputs that limit interactive exploration. 
+
+Here, we present \textit{LigPlot3D}, a web-based application for interactive, client-side analysis of protein--ligand complexes. LigPlot3D combines browser-native three-dimensional molecular rendering with deterministic, geometry-based identification of key non-covalent interactions, including hydrogen bonds, salt bridges, hydrophobic contacts, $\pi$-stacking, and halogen bonds. All analysis is performed locally within the browser, ensuring data privacy and eliminating server-side dependencies.
+
+Using representative docking complexes, LigPlot3D enables rapid qualitative assessment of binding modes and interaction geometry through an intuitive interface that integrates interactive visualization with structured interaction tables. By emphasizing accessibility, interactivity, and reproducible geometric criteria, LigPlot3D complements existing interaction profilers and visualization tools and supports efficient post-docking analysis in early-stage structure-based workflows.
+
+\end{abstract}
+
+\section{Introduction}
+Molecular docking remains a widely used computational approach for predicting plausible binding modes and approximate affinities of small molecules in protein binding sites, supporting structure-based drug discovery workflows and virtual screening pipelines \cite{trott2010autodockvina}. In practice, docking campaigns typically generate multiple poses per ligand (and often multiple ligands per target), creating an immediate downstream need for rapid, reliable inspection of poses, ranking consistency, and the chemical plausibility of predicted binding modes. Beyond numerical scores, the interpretability of docking results often depends on verifying whether a pose reproduces key physicochemical determinants of binding, such as hydrogen-bond patterns and local contact geometry in the binding site.
+
+A common strategy for increasing interpretability is the explicit identification of non-covalent interactions between ligand and receptor. Automated interaction profilers such as the Protein--Ligand Interaction Profiler (PLIP) provide systematic detection and reporting of interaction types in macromolecular structures, enabling consistent characterization of binding determinants across complexes \cite{salentin2015plip}. Recent advances have extended PLIP to incorporate protein--protein interactions, reflecting the broader demand for scalable interface analysis as structural datasets and predicted complexes continue to grow \cite{schake2025plip}. These profilers offer robust interaction taxonomies and batch-oriented workflows, but they are not primarily designed as lightweight, web-first environments for rapid, interactive inspection of docking results across multiple poses and ligands.
+
+Complementary to interaction profiling, schematic visualization tools such as LigPlot+ generate 2D interaction diagrams that summarize hydrogen bonds and non-bonded contacts, and support comparative analysis across related ligand--protein complexes \cite{laskowski2011ligplotplus}. While 2D schematics can be effective for communicating interaction hypotheses and for comparing congeneric series, docking analysis frequently benefits from interactive exploration of alternative poses, immediate cross-comparison of pose-specific interactions, and streamlined access without local installation---particularly in early-stage triage and iterative design settings.
+
+To address these practical needs, we present \textit{LigDockAnalyzer}, a web-based application for interactive analysis of docking outputs and protein--ligand complexes. LigDockAnalyzer is designed to support rapid pose-centric inspection by combining structure visualization with geometry-based identification of hydrogen bonds and contact-level summaries, enabling users to compare alternative poses and ligands within a unified, accessible interface. By emphasizing lightweight deployment and interactive workflows, LigDockAnalyzer aims to complement established profilers and diagram generators by improving the usability of docking post-processing and facilitating reproducible, inspection-driven decision-making.
+
+\section{Model and Methods}
+
+\subsection{Architectural Framework}
+LigDockAnalyzer is implemented as a fully client-side Single Page Application (SPA), prioritizing interactive performance, data locality, and platform independence. All parsing, analysis, and visualization are executed within the browser, eliminating server-side dependencies and avoiding external data transfer.
+
+The application is developed using \textbf{React.js} (v19.2) \cite{reactjs} with a functional component architecture. React hooks are employed for deterministic state management of molecular representations, interaction tables, and user-driven selections. The build and bundling pipeline is based on \textbf{Vite} (v7.2) \cite{vitejs}, enabling efficient module resolution and fast incremental rebuilds during development. Layout, typography, and responsive styling are handled using \textbf{TailwindCSS}, ensuring consistent rendering across screen sizes and devices.
+
+\subsection{Molecular Visualization Engine}
+Three-dimensional molecular rendering is performed using a hybrid WebGL-based visualization layer that integrates two established libraries:
+\begin{itemize}
+    \item \textbf{NGL Viewer} (v2.4.0) \cite{rose2018ngl}, which is used for rendering macromolecular structures, including protein cartoons, surfaces, and backbone representations. NGL provides robust support for standard structural formats such as PDB and mmCIF.
+    \item \textbf{3Dmol.js} (v2.5.3) \cite{rego20153dmol}, which is employed for efficient rendering of small molecules and localized interaction geometries.
+\end{itemize}
+
+A custom synchronization layer coordinates camera state, orientation, and selection events between the two rendering engines, enabling seamless transitions between global protein views and ligand-focused inspection without loss of spatial context.
+
+\subsection{Geometric Interaction Algorithms}
+LigDockAnalyzer incorporates a deterministic, geometry-based interaction detection module designed for rapid, pose-centric analysis. Interaction classification is performed using explicit distance- and angle-based criteria derived from commonly accepted structural biology conventions. All interaction calculations are executed client-side using atomic coordinates parsed directly from the loaded structure files.
+
+Geometric thresholds and atom classifications are defined centrally in the application configuration (\texttt{constants.ts}), ensuring transparency and reproducibility of interaction assignments.
+
+\subsubsection{Hydrogen Bonds}
+Hydrogen bonds are identified between potential donor and acceptor atoms, restricted to nitrogen, oxygen, and sulfur. A hydrogen bond is assigned when the following conditions are satisfied:
+\begin{itemize}
+    \item \textbf{Distance:} Donor--acceptor heavy-atom separation $\le 3.5$~\AA.
+    \item \textbf{Angle:} Donor--hydrogen--acceptor angle $\ge 120^{\circ}$, enforcing directionality.
+\end{itemize}
+Fluorine atoms are explicitly excluded from the acceptor set due to their limited hydrogen-bonding capacity in biological environments.
+
+\subsubsection{Salt Bridges}
+Salt bridges are defined as electrostatic interactions between oppositely charged ionizable groups. Positively charged centers include nitrogen atoms in the side chains of arginine (NH1, NH2), lysine (NZ), and histidine (ND1, NE2), while negatively charged centers correspond to carboxylate oxygen atoms in aspartate (OD1, OD2) and glutamate (OE1, OE2). A salt bridge is assigned when the distance between charge centers is $\le 4.0$~\AA.
+
+\subsubsection{Hydrophobic Contacts}
+Hydrophobic contacts are detected between non-polar carbon atoms, including aliphatic and aromatic carbons. A distance cutoff of $\le 4.5$~\AA\ is applied to capture van der Waals contacts that contribute to hydrophobic stabilization within the binding site.
+
+\subsubsection{$\pi$-Stacking Interactions}
+Aromatic interactions are evaluated for residues containing planar ring systems (phenylalanine, tyrosine, tryptophan, and histidine). Ring centroids and plane normals are computed to classify interaction geometry:
+\begin{itemize}
+    \item \textbf{Centroid Distance:} $\le 5.5$~\AA.
+    \item \textbf{Parallel Stacking:} Inter-planar angle $\le 30^{\circ}$ with lateral offset $\le 2.0$~\AA.
+    \item \textbf{T-shaped Stacking:} Inter-planar angle $\ge 60^{\circ}$.
+\end{itemize}
+
+\subsubsection{Halogen Bonds}
+Halogen bonds are identified between halogen donors (Cl, Br, I) and nucleophilic acceptors (N, O, S). Interaction assignment requires:
+\begin{itemize}
+    \item \textbf{Distance:} Halogen--acceptor separation $\le 3.5$~\AA.
+    \item \textbf{Angle:} C--X$\cdots$acceptor angle $\ge 140^{\circ}$, consistent with sigma-hole directionality.
+\end{itemize}
+
+\subsubsection{Metal Coordination}
+Metal coordination interactions are detected for common biologically relevant metals (e.g., Zn, Fe, Mg, Ca) interacting with electronegative atoms (N, O, S). A stringent distance threshold of $\le 2.8$~\AA\ is applied to identify coordination contacts.
+
+\section{Results and Discussion}
+
+\subsection{Interactive Exploration of Binding Interfaces}
+LigPlot3D provides an integrated interface composed of a central three-dimensional visualization viewport and a configurable analytical sidebar. Upon loading a PDB structure, the application parses the coordinate file, identifies ligand entities, and constructs a localized representation of the binding environment. Users may selectively control protein representations, ligand styles, and interaction overlays through explicit interface controls.
+
+Figure~\ref{fig:initial} illustrates the initial application state prior to structure loading, highlighting the minimal interface and upload workflow. After structure initialization, LigPlot3D enables interactive inspection of ligand--residue interactions, including real-time toggling of hydrogen bonds, salt bridges, hydrophobic contacts, $\pi$-stacking, and halogen bonds. Interaction visibility and rendering parameters can be adjusted dynamically, allowing users to focus on specific interaction classes without altering the underlying structure.
+
+\subsection{Interaction Detection and Geometric Consistency}
+The interaction detection module was evaluated qualitatively by examining representative protein--ligand complexes commonly used in docking benchmarks. For the human JAK2 kinase complex (PDB: 3DJI), LigPlot3D identified canonical hinge-region hydrogen bonds and electrostatic contacts consistent with established binding modes for ATP-competitive kinase inhibitors (Figure~\ref{fig:loaded}). Detected interactions were stable under minor view transformations, reflecting the deterministic nature of the geometry-based criteria.
+
+The application applies strict distance and angular constraints for interaction assignment, which reduces the inclusion of weak or geometrically ambiguous contacts. In practice, this results in concise interaction maps that emphasize structurally meaningful interactions rather than exhaustive contact enumeration. While LigPlot3D does not aim to provide an exhaustive interaction taxonomy, the implemented interaction classes capture the dominant non-covalent features relevant for docking pose assessment.
+
+\subsection{Performance and Accessibility}
+All visualization and interaction analysis in LigPlot3D is executed client-side within a standard web browser. In routine use, the application loads typical protein--ligand complexes without perceptible delay and maintains smooth interactive frame rates for structures containing up to approximately $10^5$ atoms. Because no server-side processing is required, LigPlot3D can be used in restricted or offline environments and does not transmit structural data externally.
+
+This deployment model lowers the barrier to entry for docking result inspection and facilitates rapid review of binding hypotheses, making the tool suitable for early-stage pose triage, educational use, and collaborative discussion settings.
+
+\subsection{Comparison with Existing Tools}
+To contextualize LigPlot3D within the landscape of interaction analysis and visualization tools, we compared its functionality with LigPlot+\cite{laskowski2011ligplotplus} and the Protein--Ligand Interaction Profiler (PLIP)\cite{salentin2015plip,schake2025plip}.
+
+LigPlot+ generates publication-quality two-dimensional interaction schematics by projecting three-dimensional complexes into flattened diagrams. These representations are effective for static reporting and comparative summaries but inherently sacrifice spatial depth information. LigPlot3D differs in that it preserves the full three-dimensional geometry of the binding site, enabling users to interrogate interaction orientations and steric relationships interactively within the browser.
+
+PLIP provides a comprehensive and well-validated interaction profiling framework, including advanced interaction classes such as water bridges and metal coordination, and supports both protein--ligand and protein--protein interfaces. However, PLIP primarily operates through server-based reports or command-line workflows that generate static outputs or external visualization scripts. LigPlot3D complements this functionality by offering an interactive, client-side environment focused on rapid docking pose inspection and immediate visual feedback, without requiring data upload or local software installation.
+
+\section{Conclusion}
+In this work, we introduced LigPlot3D, a web-based application for interactive analysis of protein--ligand interactions. By combining high-performance, browser-native molecular rendering with deterministic, geometry-based interaction criteria, LigPlot3D provides a practical balance between visual clarity and analytical rigor. The application enables rapid inspection of docking poses and binding interfaces while avoiding the installation and workflow overhead associated with traditional desktop or command-line tools.
+
+LigPlot3D is intended to complement established interaction profilers and schematic visualization tools by emphasizing accessibility, interactivity, and client-side execution. Its design supports efficient qualitative assessment of binding hypotheses, pose plausibility, and interaction geometry in early-stage structure-based studies.
+
+Future development will focus on extending interaction analysis capabilities, incorporating optional energy-based annotations, and enabling support for time-resolved structural data such as molecular dynamics trajectories.
+
+\section{Data and Software Availability}
+LigPlot3D is open-source software released under the MIT License.
+\begin{itemize}
+    \item \textbf{Web Application:} \href{https://singhnitink.github.io/LigPlot3D/}{https://singhnitink.github.io/LigPlot3D/}
+    \item \textbf{Effect Source Code:} \href{https://github.com/singhnitink/LigPlot3D}{https://github.com/singhnitink/LigPlot3D}
+\end{itemize}
+
+\section{Conflicts of Interest}
+The authors declare no conflict of interest.
+
+\begin{acknowledgement}
+The authors thank the Indian Institute of Technology (IIT) Gandhinagar for computational resources and support.
+\end{acknowledgement}
+
+\bibliography{references}
+
+\end{document}
