@@ -8,7 +8,7 @@
 \providecommand*\mcitethebibliography{\thebibliography}
 \csname @ifundefined\endcsname{endmcitethebibliography}
   {\let\endmcitethebibliography\endthebibliography}{}
-\begin{mcitethebibliography}{9}
+\begin{mcitethebibliography}{10}
 \providecommand*\natexlab[1]{#1}
 \providecommand*\mciteSetBstSublistMode[1]{}
 \providecommand*\mciteSetBstMaxWidthForm[2]{}
@@ -88,6 +88,15 @@ Rose,~A.~S.; Bradley,~A.~R.; Valasatava,~Y.; Duarte,~J.~M.; Prli{\'c},~A.;
 \bibitem[Rego and Koes(2015)Rego, and Koes]{rego20153dmol}
 Rego,~N.; Koes,~D.~R. 3Dmol. js: molecular visualization with WebGL.
   \emph{Bioinformatics} \textbf{2015}, \emph{31}, 1322--1324\relax
+\mciteBstWouldAddEndPuncttrue
+\mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
+{\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
+\EndOfBibitem
+\bibitem[Crichlow \latin{et~al.}(2009)Crichlow, Lubetsky, Leng, Bucala, and
+  Lolis]{crichlow2009structural}
+Crichlow,~G.~V.; Lubetsky,~J.~B.; Leng,~L.; Bucala,~R.; Lolis,~E.~J. Structural
+  and Kinetic Analyses of Macrophage Migration Inhibitory Factor Active Site
+  Interactions. \emph{Biochemistry} \textbf{2009}, \emph{48}, 132--139\relax
 \mciteBstWouldAddEndPuncttrue
 \mciteSetBstMidEndSepPunct{\mcitedefaultmidpunct}
 {\mcitedefaultendpunct}{\mcitedefaultseppunct}\relax
