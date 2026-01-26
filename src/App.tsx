@@ -51,9 +51,24 @@ const App: React.FC = () => {
 
   const [recenterTrigger, setRecenterTrigger] = useState(0);
 
+  // Supported molecular structure file extensions
+  const SUPPORTED_EXTENSIONS = ['.pdb', '.ent', '.cif', '.sdf', '.mol2'];
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setFile(e.target.files[0]);
+      const uploadedFile = e.target.files[0];
+      const fileName = uploadedFile.name.toLowerCase();
+      const isValidExtension = SUPPORTED_EXTENSIONS.some(ext => fileName.endsWith(ext));
+
+      if (!isValidExtension) {
+        alert(`Unsupported file format. Please upload a molecular structure file.\n\nSupported formats: ${SUPPORTED_EXTENSIONS.join(', ')}`);
+        if (fileInputRef.current) {
+          fileInputRef.current.value = '';
+        }
+        return;
+      }
+
+      setFile(uploadedFile);
       setStructure(null);
       setLigandCandidates([]);
       setSelectedLigand(null);
@@ -140,7 +155,7 @@ const App: React.FC = () => {
           )}
           <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-md text-sm font-medium transition-all shadow-sm">
             <Upload size={14} />
-            <span>Upload PDB</span>
+            <span>Upload Structure</span>
             <input
               ref={fileInputRef}
               type="file"
