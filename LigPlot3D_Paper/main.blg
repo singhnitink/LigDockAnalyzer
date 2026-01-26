@@ -1,11 +1,11 @@
-This is BibTeX, Version 0.99d (TeX Live 2023/Debian)
+This is BibTeX, Version 0.99d (TeX Live 2025)
 Capacity: max_strings=200000, hash_size=200000, hash_prime=170003
 The top-level auxiliary file: main.aux
 The style file: achemso.bst
 Reallocated singl_function (elt_size=4) to 100 items from 50.
 Database file #1: acs-main.bib
 Database file #2: references.bib
-achemso 2024-01-30 v3.13g
+achemso 2025-01-29 v3.13h
 You've used 10 entries,
             2538 wiz_defined-function locations,
             812 strings with 8171 characters,
