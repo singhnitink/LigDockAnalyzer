@@ -2,7 +2,6 @@
 
 **LigPlot3D** is a web-based tool for visualizing and analyzing protein-ligand interactions from molecular docking studies. It provides an interactive 3D view of the binding pocket and detects non-covalent interactions using scientifically accurate geometric criteria.
 
-![LigPlot3D Interface](https://via.placeholder.com/800x450?text=LigPlot3D+Screenshot)
 
 ## Features
 
