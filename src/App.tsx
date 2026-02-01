@@ -1,7 +1,7 @@
 
 import React, { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import * as NGL from 'ngl';
-import { Upload, Search, Table as TableIcon, RefreshCw, Move, Filter, HelpCircle } from 'lucide-react';
+import { Upload, Search, Table as TableIcon, RefreshCw, Move, Filter, HelpCircle, Menu, X, ChevronDown, ChevronUp } from 'lucide-react';
 import Viewer from './components/Viewer3Dmol';
 import InteractionTable from './components/InteractionTable';
 import HelpPage from './components/HelpPage';
@@ -32,7 +32,7 @@ const App: React.FC = () => {
   const [interactionFilters, setInteractionFilters] = useState<Record<InteractionType, boolean>>({
     [InteractionType.HydrogenBond]: true,
     [InteractionType.SaltBridge]: true,
-    [InteractionType.Hydrophobic]: true,
+    [InteractionType.Hydrophobic]: false,
     [InteractionType.PiStacking]: false,
     [InteractionType.HalogenBond]: false,
     [InteractionType.MetalCoordination]: false,
@@ -50,6 +50,10 @@ const App: React.FC = () => {
   });
 
   const [recenterTrigger, setRecenterTrigger] = useState(0);
+
+  // Mobile-specific states
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [tableExpanded, setTableExpanded] = useState(false);
 
   // Supported molecular structure file extensions
   const SUPPORTED_EXTENSIONS = ['.pdb', '.ent', '.cif', '.sdf', '.mol2'];
@@ -85,6 +89,25 @@ const App: React.FC = () => {
     setManualSearchQuery('');
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
+    }
+  };
+
+  // Load demo structure for visitors without their own files
+  const loadDemoFile = async () => {
+    try {
+      const response = await fetch('/LigPlot3D/demo.cif');
+      if (!response.ok) throw new Error('Failed to fetch demo file');
+      const text = await response.text();
+      const blob = new Blob([text], { type: 'text/plain' });
+      const demoFile = new File([blob], 'demo.cif', { type: 'text/plain' });
+      setFile(demoFile);
+      setStructure(null);
+      setLigandCandidates([]);
+      setSelectedLigand(null);
+      setAnalysisResult(null);
+    } catch (error) {
+      console.error('Error loading demo:', error);
+      alert('Failed to load demo file. Please try uploading your own structure.');
     }
   };
 
@@ -133,29 +156,48 @@ const App: React.FC = () => {
   return (
     <div className="h-screen bg-slate-100 flex flex-col font-sans text-slate-900 overflow-hidden selection:bg-indigo-100" style={{ maxWidth: '100%', width: '100%' }}>
       {/* Navbar */}
-      <header className="bg-white border-b border-slate-200 shrink-0 h-14 flex items-center justify-between px-6 z-40 shadow-sm">
+      <header className="bg-white border-b border-slate-200 shrink-0 h-14 flex items-center justify-between px-3 md:px-6 z-40 shadow-sm">
         <div className="flex items-center gap-2">
+          {/* Mobile menu toggle */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="lg:hidden p-2 -ml-1 text-slate-600 hover:text-indigo-600 hover:bg-slate-100 rounded-md"
+            aria-label="Toggle menu"
+          >
+            {sidebarOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
           <h1 className="text-lg font-bold text-slate-800">LigPlot3D</h1>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 md:gap-3">
           <button
             onClick={() => setShowHelp(true)}
-            className="flex items-center gap-2 px-3 py-1.5 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md text-sm font-medium transition-colors"
+            className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-md text-xs md:text-sm font-medium transition-colors"
           >
-            <HelpCircle size={14} /> Help
+            <HelpCircle size={14} /> <span className="hidden sm:inline">Help</span>
           </button>
           {file && (
             <button
               onClick={handleReset}
-              className="flex items-center gap-2 px-3 py-1.5 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-md text-sm font-medium transition-colors"
+              className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-md text-xs md:text-sm font-medium transition-colors"
             >
-              <RefreshCw size={14} /> New Analysis
+              <RefreshCw size={14} /> <span className="hidden sm:inline">New Analysis</span><span className="sm:hidden">Reset</span>
             </button>
           )}
-          <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-1.5 bg-slate-600 hover:bg-slate-700 text-white rounded-md text-sm font-medium transition-all shadow-sm">
+          {!file && (
+            <button
+              onClick={loadDemoFile}
+              className="flex items-center gap-1 md:gap-2 px-2 md:px-3 py-1.5 bg-slate-500 hover:bg-slate-600 text-white rounded-md text-xs md:text-sm font-medium transition-colors shadow-sm"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polygon points="5 3 19 12 5 21 5 3"></polygon>
+              </svg>
+              <span className="hidden sm:inline">Try Demo</span><span className="sm:hidden">Demo</span>
+            </button>
+          )}
+          <label className="cursor-pointer inline-flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1.5 bg-rose-700 hover:bg-rose-800 text-white rounded-md text-xs md:text-sm font-medium transition-all shadow-sm">
             <Upload size={14} />
-            <span>Upload Structure</span>
+            <span className="hidden sm:inline">Upload Structure</span><span className="sm:hidden">Upload</span>
             <input
               ref={fileInputRef}
               type="file"
@@ -171,11 +213,28 @@ const App: React.FC = () => {
         <HelpPage onBack={() => setShowHelp(false)} />
       ) : (
 
-        <main className="flex-1 w-full flex flex-col lg:flex-row overflow-hidden">
+        <main className="flex-1 w-full flex flex-col lg:flex-row overflow-hidden relative">
 
-          {/* SIDEBAR */}
-          <aside className="w-full lg:w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 z-30 overflow-y-auto">
-            <div className="p-4 flex flex-col gap-6">
+          {/* Mobile sidebar backdrop */}
+          {sidebarOpen && (
+            <div
+              className="lg:hidden fixed inset-0 bg-black/40 z-20 transition-opacity"
+              onClick={() => setSidebarOpen(false)}
+            />
+          )}
+
+          {/* SIDEBAR - Sliding drawer on mobile, fixed sidebar on desktop */}
+          <aside className={`
+            fixed lg:relative inset-y-0 left-0 z-30
+            w-[85%] max-w-[320px] lg:w-80 
+            bg-white border-r border-slate-200 
+            flex flex-col shrink-0 
+            transform transition-transform duration-300 ease-in-out
+            ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+            lg:top-0 top-14
+            overflow-y-auto
+          `}>
+            <div className="p-4 flex flex-col gap-4 lg:gap-6">
 
               {/* Ligand Selection */}
               <div className="bg-slate-50 rounded-lg border border-slate-200 p-4">
@@ -305,8 +364,8 @@ const App: React.FC = () => {
           {/* RIGHT PANEL: Content */}
           <div className="flex-1 w-full flex flex-col overflow-hidden relative">
 
-            {/* Top: 3D Viewer - Takes 2/3 of the space */}
-            <div className="flex-[2] w-full relative border-b border-slate-200 bg-white min-h-0">
+            {/* Top: 3D Viewer - Takes more space on mobile when table collapsed */}
+            <div className={`w-full relative border-b border-slate-200 bg-white min-h-0 transition-all duration-300 ${tableExpanded ? 'flex-1' : 'flex-[2] lg:flex-[2]'}`}>
               <Viewer
                 key={file ? file.name : 'empty'}
                 file={file}
@@ -319,12 +378,26 @@ const App: React.FC = () => {
               />
             </div>
 
-            {/* Bottom: Table - Takes 1/3 of the space with scrolling */}
-            <div className="flex-[1] w-full overflow-hidden flex flex-col bg-white min-h-0">
-              <div className="bg-slate-50 px-4 py-2 border-b border-slate-200 flex items-center gap-2 text-sm font-bold text-slate-700 shrink-0">
-                <TableIcon size={16} /> Interaction Data
-              </div>
-              <div className="flex-1 overflow-auto">
+            {/* Bottom: Table - Collapsible on mobile */}
+            <div className={`w-full overflow-hidden flex flex-col bg-white min-h-0 transition-all duration-300 ${tableExpanded ? 'flex-[2]' : 'lg:flex-[1]'}`}>
+              {/* Table Header - Clickable on mobile to expand/collapse */}
+              <button
+                onClick={() => setTableExpanded(!tableExpanded)}
+                className="lg:pointer-events-none bg-slate-50 px-4 py-3 lg:py-2 border-b border-slate-200 flex items-center justify-between text-sm font-bold text-slate-700 shrink-0 w-full hover:bg-slate-100 lg:hover:bg-slate-50 transition-colors"
+              >
+                <div className="flex items-center gap-2">
+                  <TableIcon size={16} />
+                  <span>Interaction Data</span>
+                  {filteredInteractions.length > 0 && (
+                    <span className="text-xs font-normal text-slate-500 bg-slate-200 px-1.5 py-0.5 rounded-full">{filteredInteractions.length}</span>
+                  )}
+                </div>
+                <div className="lg:hidden text-slate-400">
+                  {tableExpanded ? <ChevronDown size={18} /> : <ChevronUp size={18} />}
+                </div>
+              </button>
+              {/* Table Content - Hidden on mobile when collapsed */}
+              <div className={`flex-1 overflow-auto transition-all duration-300 ${!tableExpanded ? 'hidden lg:block' : 'block'}`}>
                 <InteractionTable interactions={filteredInteractions} />
               </div>
             </div>

@@ -337,10 +337,14 @@ const Viewer3Dmol: React.FC<Props> = ({
 
     if (!file) {
         return (
-            <div className="w-full h-full flex flex-col items-center justify-center text-slate-400 bg-slate-50 border-dashed border-2 border-slate-200 rounded-lg select-none">
-                <Camera className="w-12 h-12 mb-2 opacity-50" />
-                <p className="font-medium">3D Viewer (3Dmol)</p>
-                <p className="text-sm">Upload a file to begin</p>
+            <div className="w-full h-full flex flex-col items-center justify-center text-slate-500 bg-gradient-to-br from-slate-50 to-slate-100 border-dashed border-2 border-slate-200 rounded-lg select-none px-4 py-8">
+
+                <p className="text-xs md:text-sm text-center text-slate-400 mb-2 max-w-xs">
+                    Upload a structure file or click Try Demo to get started
+                </p>
+                <p className="text-[10px] md:text-xs text-slate-400">
+                    Supports: .pdb, .cif, .sdf, .mol2
+                </p>
             </div>
         );
     }
@@ -358,15 +362,15 @@ const Viewer3Dmol: React.FC<Props> = ({
 
             <div ref={containerRef} className="absolute inset-0 w-full h-full" />
 
-            {/* Controls */}
-            <div className="absolute top-4 right-4 flex flex-col gap-2 bg-white/95 p-2 rounded-lg shadow-md border border-slate-200 backdrop-blur-sm z-10">
-                <button onClick={() => handleZoom(-5)} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors" title="Zoom In"><ZoomIn size={18} /></button>
-                <button onClick={() => handleZoom(5)} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors" title="Zoom Out"><ZoomOut size={18} /></button>
+            {/* Controls - Touch-friendly on mobile */}
+            <div className="absolute top-2 right-2 md:top-4 md:right-4 flex flex-col gap-1 md:gap-2 bg-white/95 p-1.5 md:p-2 rounded-lg shadow-md border border-slate-200 backdrop-blur-sm z-10">
+                <button onClick={() => handleZoom(-5)} className="p-2.5 md:p-2 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors active:bg-indigo-100" title="Zoom In"><ZoomIn size={18} /></button>
+                <button onClick={() => handleZoom(5)} className="p-2.5 md:p-2 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors active:bg-indigo-100" title="Zoom Out"><ZoomOut size={18} /></button>
 
-                <hr className="border-slate-200 my-1" />
+                <hr className="border-slate-200 my-0.5 md:my-1" />
 
-                {/* Translation Controls */}
-                <div className="grid grid-cols-3 gap-0.5">
+                {/* Translation Controls - Hidden on mobile to save space */}
+                <div className="hidden md:grid grid-cols-3 gap-0.5">
                     <div className="col-start-2">
                         <button onClick={() => handleTranslate(0, 20)} className="p-1.5 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors" title="Pan Up">
                             <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3l4 4H4z" /></svg>
@@ -385,8 +389,8 @@ const Viewer3Dmol: React.FC<Props> = ({
                     </div>
                 </div>
 
-                <hr className="border-slate-200 my-1" />
-                <button onClick={handleSnapshot} className="p-2 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors" title="Snapshot"><Camera size={18} /></button>
+                <hr className="border-slate-200 my-0.5 md:my-1 hidden md:block" />
+                <button onClick={handleSnapshot} className="p-2.5 md:p-2 hover:text-indigo-600 hover:bg-indigo-50 rounded transition-colors active:bg-indigo-100" title="Snapshot"><Camera size={18} /></button>
             </div>
         </div>
     );
