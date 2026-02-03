@@ -66,7 +66,8 @@ const findLigandRings = (atoms: AtomData[]): AtomData[][] => {
 };
 
 export const getLigandCandidates = (structure: NGL.Structure): ResidueOption[] => {
-  const candidates: Map<string, ResidueOption> = new Map();
+  // First pass: collect all potential ligand residues
+  const residueMap: Map<string, { resName: string; resNo: number; chain: string; atomCount: number; centerX: number; centerY: number; centerZ: number }> = new Map();
 
   structure.eachResidue((rp) => {
     const resNameUpper = rp.resname.toUpperCase();
@@ -74,21 +75,90 @@ export const getLigandCandidates = (structure: NGL.Structure): ResidueOption[] =
     const isHet = rp.isHetero();
     const isIgnored = IGNORED_RESIDUES.has(resNameUpper);
 
-    // Aggressively find potential ligands
     if (isCommon || (isHet && !isIgnored)) {
       const key = `${rp.chainname}:${rp.resno}`;
-      if (!candidates.has(key)) {
-        candidates.set(key, {
+      if (!residueMap.has(key)) {
+        // Calculate center of residue for distance checking
+        let sumX = 0, sumY = 0, sumZ = 0, count = 0;
+        rp.eachAtom((ap: any) => {
+          sumX += ap.x;
+          sumY += ap.y;
+          sumZ += ap.z;
+          count++;
+        });
+        residueMap.set(key, {
           resName: rp.resname,
           resNo: rp.resno,
           chain: rp.chainname,
           atomCount: rp.atomCount,
+          centerX: count > 0 ? sumX / count : 0,
+          centerY: count > 0 ? sumY / count : 0,
+          centerZ: count > 0 ? sumZ / count : 0
         });
       }
     }
   });
 
-  return Array.from(candidates.values()).sort((a, b) => {
+  // Second pass: group residues with same name/chain that are spatially connected (polymer chains)
+  const residues = Array.from(residueMap.values());
+  const grouped: Map<string, ResidueOption> = new Map();
+  const visited = new Set<string>();
+
+  const POLYMER_DISTANCE_THRESHOLD = 5.0; // Å - typical glycosidic bond distance + buffer
+
+  for (const res of residues) {
+    const resKey = `${res.chain}:${res.resNo}`;
+    if (visited.has(resKey)) continue;
+
+    // Start a new group with this residue
+    const groupKey = `${res.chain}:${res.resName}:${res.resNo}`;
+    const resNos: number[] = [res.resNo];
+    let totalAtomCount = res.atomCount;
+    visited.add(resKey);
+
+    // Find all connected residues with same name and chain
+    let changed = true;
+    while (changed) {
+      changed = false;
+      for (const other of residues) {
+        const otherKey = `${other.chain}:${other.resNo}`;
+        if (visited.has(otherKey)) continue;
+        if (other.resName !== res.resName || other.chain !== res.chain) continue;
+
+        // Check if this residue is close to any in our group
+        for (const groupedResNo of resNos) {
+          const groupedRes = residueMap.get(`${res.chain}:${groupedResNo}`);
+          if (!groupedRes) continue;
+
+          const dx = other.centerX - groupedRes.centerX;
+          const dy = other.centerY - groupedRes.centerY;
+          const dz = other.centerZ - groupedRes.centerZ;
+          const dist = Math.sqrt(dx * dx + dy * dy + dz * dz);
+
+          if (dist < POLYMER_DISTANCE_THRESHOLD) {
+            resNos.push(other.resNo);
+            totalAtomCount += other.atomCount;
+            visited.add(otherKey);
+            changed = true;
+            break;
+          }
+        }
+      }
+    }
+
+    // Sort residue numbers for consistent display
+    resNos.sort((a, b) => a - b);
+
+    grouped.set(groupKey, {
+      resName: res.resName,
+      resNo: resNos[0], // Primary residue number
+      resNos: resNos.length > 1 ? resNos : undefined, // Only set if polymer
+      chain: res.chain,
+      atomCount: totalAtomCount
+    });
+  }
+
+  return Array.from(grouped.values()).sort((a, b) => {
     const aIsCommon = COMMON_LIGANDS.has(a.resName.toUpperCase());
     const bIsCommon = COMMON_LIGANDS.has(b.resName.toUpperCase());
     if (aIsCommon && !bIsCommon) return -1;
@@ -122,10 +192,13 @@ export const analyzeInteractions = (
   const ligandAtoms: AtomData[] = [];
   const proteinAtoms: AtomData[] = [];
 
+  // Support polymer ligands with multiple residue numbers
+  const ligandResNos = ligandResidue.resNos ?? [ligandResidue.resNo];
+
   // 1. Extract Atoms
   structure.eachAtom((ap) => {
     const isLigand =
-      ap.resno === ligandResidue.resNo &&
+      ligandResNos.includes(ap.resno) &&
       ap.chainname === ligandResidue.chain &&
       ap.resname === ligandResidue.resName;
 

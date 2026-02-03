@@ -89,9 +89,9 @@ const Viewer3Dmol: React.FC<Props> = ({
     useEffect(() => {
         if (triggerRecenter > 0 && viewerRef.current) {
             if (selectedLigand) {
-                // Zoom to ligand
-                // 3Dmol selection: {resn: "LIG", resi: 1, chain: "A"}
-                const sel = { resi: selectedLigand.resNo, chain: selectedLigand.chain };
+                // Zoom to ligand - support polymer chains
+                const resNos = selectedLigand.resNos ?? [selectedLigand.resNo];
+                const sel = { resi: resNos, chain: selectedLigand.chain };
                 viewerRef.current.zoomTo(sel, 500);
             } else {
                 viewerRef.current.zoomTo({}, 500);
@@ -108,10 +108,11 @@ const Viewer3Dmol: React.FC<Props> = ({
         // Reset styles
         viewer.setStyle({}, {});
 
-        // Ligand Selection
-        let ligSel = {};
+        // Ligand Selection - support polymer chains with multiple residue numbers
+        let ligSel: any = {};
         if (selectedLigand) {
-            ligSel = { resi: selectedLigand.resNo, chain: selectedLigand.chain };
+            const resNos = selectedLigand.resNos ?? [selectedLigand.resNo];
+            ligSel = { resi: resNos, chain: selectedLigand.chain };
         }
 
         // 1. Protein Style (context)

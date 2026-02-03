@@ -26,7 +26,19 @@ export const RESIDUE_PROPS = {
 };
 
 // Explicit Ligand Names to always detect (even if not HETATM)
-export const COMMON_LIGANDS = new Set(['LIG', 'UNK', 'DRG', 'INH', '001', '1']);
+// Includes common drug-like ligands and carbohydrate/polymer residues
+export const COMMON_LIGANDS = new Set([
+  // Generic ligand names
+  'LIG', 'UNK', 'DRG', 'INH', '001', '1',
+  // Carbohydrates/Glycans (often appear as ATOM not HETATM)
+  'NAG', 'NDG', 'MAN', 'BMA', 'GAL', 'GLC', 'FUC', 'SIA', 'BGC',
+  'BGLC', 'BGLCC', 'AGLC', 'AGLCA', // Beta/Alpha glucose variants
+  'GLA', 'GUP', 'XYL', 'RIB', 'ARA', // Other sugars
+  // Lipids/Fatty acids
+  'PLM', 'OLA', 'MYR', 'STE',
+  // Common cofactors
+  'ATP', 'ADP', 'AMP', 'GTP', 'GDP', 'NAD', 'NADP', 'FAD', 'FMN', 'HEM', 'HEC'
+]);
 export const IGNORED_RESIDUES = new Set(['HOH', 'DOD', 'TIP', 'WAT', 'SOL', 'NA', 'CL', 'K', 'MG', 'ZN', 'CA', 'MN', 'SO4', 'PO4']);
 
 // Atom Definitions for specific interaction types

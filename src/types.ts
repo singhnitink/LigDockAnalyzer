@@ -35,7 +35,8 @@ export interface Interaction {
 
 export interface ResidueOption {
   resName: string;
-  resNo: number;
+  resNo: number;        // Primary residue number (first in chain)
+  resNos?: number[];    // All residue numbers (for polymer chains like glucans)
   chain: string;
   atomCount: number;
 }

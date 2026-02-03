@@ -254,11 +254,17 @@ const App: React.FC = () => {
                     }}
                     disabled={ligandCandidates.length === 0}
                   >
-                    {ligandCandidates.map(lig => (
-                      <option key={`${lig.chain}:${lig.resNo}`} value={`${lig.chain}:${lig.resNo}`}>
-                        {lig.resName} {lig.resNo} (Chain {lig.chain})
-                      </option>
-                    ))}
+                    {ligandCandidates.map(lig => {
+                      const isPolymer = lig.resNos && lig.resNos.length > 1;
+                      const displayText = isPolymer
+                        ? `${lig.resName} ${lig.resNos![0]}-${lig.resNos![lig.resNos!.length - 1]} (${lig.chain}) [${lig.resNos!.length} units]`
+                        : `${lig.resName} ${lig.resNo} (Chain ${lig.chain})`;
+                      return (
+                        <option key={`${lig.chain}:${lig.resNo}`} value={`${lig.chain}:${lig.resNo}`}>
+                          {displayText}
+                        </option>
+                      );
+                    })}
                     {ligandCandidates.length === 0 && <option>No ligands found</option>}
                   </select>
                 </div>
